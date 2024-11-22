@@ -24,6 +24,7 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"github.com/l-uuuuuu/viper/internal/features"
 	"io"
 	"log/slog"
 	"os"
@@ -40,8 +41,6 @@ import (
 	"github.com/spf13/afero"
 	"github.com/spf13/cast"
 	"github.com/spf13/pflag"
-
-	"github.com/spf13/viper/internal/features"
 )
 
 // ConfigMarshalError happens when failing to marshal the configuration.
