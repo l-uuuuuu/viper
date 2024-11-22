@@ -2,11 +2,10 @@ package viper_test
 
 import (
 	"fmt"
+	"github.com/l-uuuuuu/viper"
 
 	"github.com/sagikazarmark/locafero"
 	"github.com/spf13/afero"
-
-	"github.com/spf13/viper"
 )
 
 func ExampleFinder() {
