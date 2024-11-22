@@ -516,7 +516,6 @@ func (v *Viper) searchIndexableWithPathPrefixes(source any, path []string) any {
 
 	// search for path prefixes, starting from the longest one
 	for i := len(path); i > 0; i-- {
-		//prefixKey := strings.ToLower(strings.Join(path[0:i], v.keyDelim))
 		prefixKey := v.caseKey(strings.Join(path[0:i], v.keyDelim))
 		var val any
 		switch sourceIndexable := source.(type) {
@@ -709,8 +708,6 @@ func GetViper() *Viper {
 func Get(key string) any { return v.Get(key) }
 
 func (v *Viper) Get(key string) any {
-	//lcaseKey := strings.ToLower(key)
-	//val := v.find(lcaseKey, true)
 	casedKey := v.caseKey(key)
 	val := v.find(casedKey, true)
 	if val == nil {
@@ -720,7 +717,6 @@ func (v *Viper) Get(key string) any {
 	if v.typeByDefValue {
 		// TODO(bep) this branch isn't covered by a single test.
 		valType := val
-		//path := strings.Split(lcaseKey, v.keyDelim)
 		path := strings.Split(casedKey, v.keyDelim)
 		defVal := v.searchMap(v.defaults, path)
 		if defVal != nil {
@@ -773,7 +769,7 @@ func (v *Viper) Sub(key string) *Viper {
 
 	if reflect.TypeOf(data).Kind() == reflect.Map {
 		subv.parents = append([]string(nil), v.parents...)
-		subv.parents = append(subv.parents, strings.ToLower(key))
+		subv.parents = append(subv.parents, v.caseKey(key))
 		subv.automaticEnvApplied = v.automaticEnvApplied
 		subv.envPrefix = v.envPrefix
 		subv.envKeyReplacer = v.envKeyReplacer
@@ -1096,7 +1092,6 @@ func (v *Viper) BindFlagValue(key string, flag FlagValue) error {
 	if flag == nil {
 		return fmt.Errorf("flag for %q is nil", key)
 	}
-	//v.pflags[strings.ToLower(key)] = flag
 	v.pflags[v.caseKey(key)] = flag
 	return nil
 }
@@ -1114,7 +1109,6 @@ func (v *Viper) BindEnv(input ...string) error {
 		return fmt.Errorf("missing key to bind to")
 	}
 
-	//key := strings.ToLower(input[0])
 	key := v.caseKey(input[0])
 
 	if len(input) == 1 {
@@ -1361,8 +1355,6 @@ func stringToIntConv(val string) any {
 func IsSet(key string) bool { return v.IsSet(key) }
 
 func (v *Viper) IsSet(key string) bool {
-	//lcaseKey := strings.ToLower(key)
-	//val := v.find(lcaseKey, false)
 	casedKey := v.caseKey(key)
 	val := v.find(casedKey, false)
 	return val != nil
@@ -1390,12 +1382,11 @@ func (v *Viper) SetEnvKeyReplacer(r *strings.Replacer) {
 func RegisterAlias(alias, key string) { v.RegisterAlias(alias, key) }
 
 func (v *Viper) RegisterAlias(alias, key string) {
-	//v.registerAlias(alias, strings.ToLower(key))
 	v.registerAlias(alias, v.caseKey(key))
 }
 
 func (v *Viper) registerAlias(alias, key string) {
-	alias = strings.ToLower(alias)
+	alias = v.caseKey(key)
 	if alias != key && alias != v.realKey(key) {
 		_, exists := v.aliases[alias]
 
@@ -1440,7 +1431,7 @@ func (v *Viper) realKey(key string) string {
 func InConfig(key string) bool { return v.InConfig(key) }
 
 func (v *Viper) InConfig(key string) bool {
-	lcaseKey := strings.ToLower(key)
+	lcaseKey := v.caseKey(key)
 
 	// if the requested key is an alias, then return the proper key
 	lcaseKey = v.realKey(lcaseKey)
@@ -1456,15 +1447,12 @@ func SetDefault(key string, value any) { v.SetDefault(key, value) }
 
 func (v *Viper) SetDefault(key string, value any) {
 	// If alias passed in, then set the proper default
-	//key = v.realKey(strings.ToLower(key))
-	//value = toCaseInsensitiveValue(value)
 	key = v.realKey(v.caseKey(key))
 	if !v.caseSensitiveKeys {
 		value = toCaseInsensitiveValue(value)
 	}
 
 	path := strings.Split(key, v.keyDelim)
-	//lastKey := strings.ToLower(path[len(path)-1])
 	lastKey := v.caseKey(path[len(path)-1])
 
 	deepestMap := deepSearch(v.defaults, path[0:len(path)-1])
@@ -1481,15 +1469,12 @@ func Set(key string, value any) { v.Set(key, value) }
 
 func (v *Viper) Set(key string, value any) {
 	// If alias passed in, then set the proper override
-	//key = v.realKey(strings.ToLower(key))
-	//value = toCaseInsensitiveValue(value)
 	key = v.realKey(v.caseKey(key))
 	if !v.caseSensitiveKeys {
 		value = toCaseInsensitiveValue(value)
 	}
 
 	path := strings.Split(key, v.keyDelim)
-	//lastKey := strings.ToLower(path[len(path)-1])
 	lastKey := v.caseKey(path[len(path)-1])
 
 	deepestMap := deepSearch(v.override, path[0:len(path)-1])
@@ -1742,13 +1727,10 @@ func (v *Viper) marshalWriter(w io.Writer, configType string) error {
 }
 
 func keyExists(k string, m map[string]any) string {
-	//lk := strings.ToLower(k)
 	ck := v.caseKey(k)
 
 	for mk := range m {
-		lmk := strings.ToLower(mk)
-		//if lmk == lk {
-		if lmk == ck {
+		if mk == ck {
 			return mk
 		}
 	}
@@ -1924,7 +1906,6 @@ func (v *Viper) flattenAndMergeMap(shadow map[string]bool, m map[string]any, pre
 			m2 = cast.ToStringMap(val)
 		default:
 			// immediate value
-			//shadow[strings.ToLower(fullKey)] = true
 			shadow[v.caseKey(fullKey)] = true
 			continue
 		}
@@ -1951,7 +1932,6 @@ outer:
 			}
 		}
 		// add key
-		//shadow[strings.ToLower(k)] = true
 		shadow[v.caseKey(k)] = true
 	}
 	return shadow
@@ -1975,7 +1955,6 @@ func (v *Viper) getSettings(keys []string) map[string]any {
 			continue
 		}
 		path := strings.Split(k, v.keyDelim)
-		//lastKey := strings.ToLower(path[len(path)-1])
 		lastKey := v.caseKey(path[len(path)-1])
 		deepestMap := deepSearch(m, path[0:len(path)-1])
 		// set innermost value
