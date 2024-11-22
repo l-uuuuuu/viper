@@ -2,13 +2,12 @@ package viper
 
 import (
 	"errors"
+	"github.com/l-uuuuuu/viper/inter/encoding/dotenv"
+	"github.com/l-uuuuuu/viper/inter/encoding/json"
+	"github.com/l-uuuuuu/viper/inter/encoding/toml"
+	"github.com/l-uuuuuu/viper/inter/encoding/yaml"
 	"strings"
 	"sync"
-
-	"github.com/spf13/viper/internal/encoding/dotenv"
-	"github.com/spf13/viper/internal/encoding/json"
-	"github.com/spf13/viper/internal/encoding/toml"
-	"github.com/spf13/viper/internal/encoding/yaml"
 )
 
 // Encoder encodes Viper's internal data structures into a byte representation.

@@ -8,6 +8,7 @@ package viper
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/l-uuuuuu/viper/inter/testutil"
 	"io"
 	"os"
 	"os/exec"
@@ -28,8 +29,6 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/spf13/viper/internal/testutil"
 )
 
 // var yamlExample = []byte(`Hacker: true

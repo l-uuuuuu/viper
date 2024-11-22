@@ -24,7 +24,7 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
-	"github.com/l-uuuuuu/viper/internal/features"
+	"github.com/l-uuuuuu/viper/inter/features"
 	"io"
 	"log/slog"
 	"os"
